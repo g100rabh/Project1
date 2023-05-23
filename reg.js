@@ -40,3 +40,4 @@ a.addEventListener('mouseout',(event)=>{
 
 
 
+console.log(1);
