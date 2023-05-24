@@ -63,7 +63,14 @@ function onSubmit(event){
 
         userList.appendChild(li);
         
-        localStorage.setItem('userName', nameInput.value);
+        // localStorage.setItem(phoneInput.value, nameInput.value);
+
+        let store = { phone : phoneInput.value,
+            name : nameInput.value, 
+            email : emailInput.value}
+
+        localStorage.setItem(store.phone, JSON.stringify(store));
+
 
         // Reset the form fields after successful submission
         
