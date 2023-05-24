@@ -74,6 +74,11 @@ input[type="submit"]{
 .items {
     list-style-type: none;
 }
+#user {
+    border-radius: 1px;
+    color: rgb(80, 158, 80);
+    font-size: 15px;
+}
 .item1{
     color: rgb(12, 236, 12);
     font-weight: bolder;
@@ -83,4 +88,11 @@ input[type="submit"]{
     color: orange;
     font-weight: bolder;
     font-size: 20px;
+}
+.error{
+    background-color: rgba(245, 140, 132, 0.911);
+    color: '#fff';
+    padding: 5px;
+    margin: 5px;
+    border-radius: 2px;
 }
