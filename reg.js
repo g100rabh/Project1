@@ -75,7 +75,7 @@ function onSubmit(event){
 
         // add Edit button 
         let editBtn = document.createElement('button');
-        editBtn.className = "edit btn-light btn-sm float-right";
+        editBtn.className = "edit btn-light btn-sm float-right edit";
         editBtn.appendChild(document.createTextNode('Edit'));
         li.appendChild(editBtn);
         let space = document.createTextNode(' ');
@@ -99,7 +99,7 @@ function onSubmit(event){
     x.reset();
 }
 
-
+ // ************delete button functionality************
 // userList.addEventListener('click', removeItem);
 userList.addEventListener('click', function(event) {
     removeItem(event, phoneInput.value);
@@ -116,3 +116,29 @@ function removeItem(event, phoneInput){
         }
         
     }
+    // *********Edit button functionality************
+    userList.addEventListener('click', function(event) {
+        editItem(event, phoneInput.value);
+        });
+    function editItem(event, phoneInput){
+        event.preventDefault();
+            if(event.target.classList.contains('edit')){
+                let storeData = JSON.parse(localStorage.getItem(phoneInput));
+                if(confirm('Are you sure?')){
+                    let li2 = event.target.parentElement;
+
+                    
+                    
+                    nameInput = storeData.name;
+                    emailInput = storeData.email;
+                    phoneInput = storeData.phone;
+
+                    localStorage.removeItem(phoneInput);
+                    userList.removeChild(li2); 
+                }
+            }
+            
+        }
+    
+
+
