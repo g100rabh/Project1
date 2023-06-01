@@ -46,7 +46,6 @@ const form = document.querySelector("#reg");
 const userList = document.querySelector("#user");
 
 
-window.addEventListener("load", onReload);
 form.addEventListener("submit", onSubmit);
 
 function onSubmit(event) {
@@ -54,7 +53,7 @@ function onSubmit(event) {
   if (
     nameInput.value === "" ||
     emailInput.value === "" ||
-    phoneInput.values === "" ||
+    phoneInput.value === "" ||
     date.value === ""
   ) {
     errorMessage.classList.add("error");
@@ -81,15 +80,17 @@ function onSubmit(event) {
       name: nameInput.value,
       email: emailInput.value,
     };
-    li.id = store.phone;
+    // li.id = store.phone;
 
-    axios.post("https://crudcrud.com/api/1949d9a8e0f44104819f84da3b5530f5/bookAcallData", store)
+    axios.post("https://crudcrud.com/api/4f696d0eb91d4c62aec258e81f6917de/bookAcallData", store)
       .then((response) => {
         console.log(response)
+        li.id= response.data._id
       })
       .catch((err) => {
         console.log(err);
       })
+    
 
     // localStorage.setItem(store.phone, JSON.stringify(store));
     // console.log(localStorage.getItem(phoneInput.value))
@@ -120,75 +121,93 @@ function onSubmit(event) {
   x.reset();
 }
 
+// ************Get data from crudcrud api on UI screen************************************ 
+window.addEventListener("DOMContentLoaded", () => {
+  axios.get("https://crudcrud.com/api/4f696d0eb91d4c62aec258e81f6917de/bookAcallData")
+  .then((response) => {
+    for(var i =0; i<response.data.length; i++){
+      let key = response.data[i];
+      // let storeData = JSON.parse(localStorage.getItem(key));
+  
+      const li = document.createElement("li");
+      li.appendChild(document.createTextNode(`${key.name} : ${key.email} : ${key.phone}`));
+      userList.appendChild(li);
+  
+      li.id = key._id;
+  
+      // Add edit and delete buttons
+      let space = document.createTextNode(" ");
+      li.appendChild(space);
+  
+      let editBtn = document.createElement("button");
+      editBtn.className = "edit btn-light btn-sm float-right edit";
+      editBtn.appendChild(document.createTextNode("Edit"));
+      li.appendChild(editBtn);
+  
+      li.appendChild(space);
+  
+      let deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn btn-danger btn-sm float-right delete";
+      deleteBtn.appendChild(document.createTextNode("Delete"));
+      li.appendChild(deleteBtn);
+    }
+  })
+  .catch((err) => console.log(err))
+})
+  
+
 // ************delete button functionality************
 // userList.addEventListener('click', removeItem);
 userList.addEventListener("click", function (event) {
-  removeItem(event, phoneInput.value);
+  removeItem(event);
 });
-function removeItem(event, phoneInput) {
+function removeItem(event) {
   event.preventDefault();
   if (event.target.classList.contains("delete")) {
     if (confirm("Are you sure?")) {
-      let phone = event.target.parentElement.id;
+      // let userId = event.target.parentElement.id;
       let li2 = event.target.parentElement;
-
-      localStorage.removeItem(phone);
+      let userId = li2.id;
+      console.log(userId)
+      
+      // Send DELETE request to the API
+      axios.delete(`https://crudcrud.com/api/4f696d0eb91d4c62aec258e81f6917de/bookAcallData/${userId}`)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // localStorage.removeItem(phone);
       userList.removeChild(li2);
     }
   }
 }
 
 
-// *********Edit button functionality************
-userList.addEventListener("click", function (event) {
-  editItem(event, phoneInput.value);
-});
-function editItem(event) {
+// // *********Edit button functionality************
+// userList.addEventListener("click", function (event) {
+//   editItem(event, phoneInput.value);
+// });
+// function editItem(event) {
     
-    event.preventDefault();
-    if (event.target.classList.contains("edit")) {
-        if (confirm("Are you sure?")) {
-            let phone = event.target.parentElement.id;
-            let li2 = event.target.parentElement;
+//     event.preventDefault();
+//     if (event.target.classList.contains("edit")) {
+//         if (confirm("Are you sure?")) {
+//             let phone = event.target.parentElement.id;
+//             let li2 = event.target.parentElement;
 
-            let storeData = JSON.parse(localStorage.getItem(phone));
-            console.log(storeData);
-            nameInput.value = storeData.name;
-            emailInput.value = storeData.email;
-            phoneInput.value = storeData.phone;
+//             let storeData = JSON.parse(localStorage.getItem(phone));
+//             console.log(storeData);
+//             nameInput.value = storeData.name;
+//             emailInput.value = storeData.email;
+//             phoneInput.value = storeData.phone;
 
-            localStorage.removeItem(phone);
-            userList.removeChild(li2);
-            }
-        }
-}
+//             localStorage.removeItem(phone);
+//             userList.removeChild(li2);
+//             }
+//         }
+// }
 
-function onReload() {
-  for (let i = 0; i < localStorage.length; i++) {
-    let key = localStorage.key(i);
-    let storeData = JSON.parse(localStorage.getItem(key));
 
-    const li = document.createElement("li");
-    li.appendChild(document.createTextNode(`${storeData.name} : ${storeData.phone} : ${storeData.email}`));
-    userList.appendChild(li);
 
-    li.id = storeData.description;
-
-    // Add edit and delete buttons
-    let space = document.createTextNode(" ");
-    li.appendChild(space);
-
-    let editBtn = document.createElement("button");
-    editBtn.className = "edit btn-light btn-sm float-right edit";
-    editBtn.appendChild(document.createTextNode("Edit"));
-    li.appendChild(editBtn);
-
-    li.appendChild(space);
-
-    let deleteBtn = document.createElement("button");
-    deleteBtn.className = "btn btn-danger btn-sm float-right delete";
-    deleteBtn.appendChild(document.createTextNode("Delete"));
-    li.appendChild(deleteBtn);
-  }
-}
-  
