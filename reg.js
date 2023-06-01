@@ -44,7 +44,7 @@ const date = document.querySelector("#date");
 const time = document.querySelector("time");
 const form = document.querySelector("#reg");
 const userList = document.querySelector("#user");
-
+let user_id = 0;
 
 form.addEventListener("submit", onSubmit);
 
@@ -64,59 +64,69 @@ function onSubmit(event) {
       errorMessage.remove();
     }, 3000);
   } else {
-    const li = document.createElement("li");
-    li.appendChild(
-      document.createTextNode(
-        `${nameInput.value} : ${emailInput.value} : ${phoneInput.value}`
-      )
-    );
+      const li = document.createElement("li");
+      li.appendChild(
+        document.createTextNode(
+          `${nameInput.value} : ${emailInput.value} : ${phoneInput.value}`
+        )
+      );
 
-    userList.appendChild(li);
+      userList.appendChild(li);
 
-    // localStorage.setItem(phoneInput.value, nameInput.value);
+      // localStorage.setItem(phoneInput.value, nameInput.value);
 
-    let store = {
-      phone: phoneInput.value,
-      name: nameInput.value,
-      email: emailInput.value,
-    };
-    // li.id = store.phone;
+      let store = {
+        phone: phoneInput.value,
+        name: nameInput.value,
+        email: emailInput.value,
+      };
+      // li.id = store.phone;
+      if(user_id == 0){
+        axios.post("https://crudcrud.com/api/4f696d0eb91d4c62aec258e81f6917de/bookAcallData", store)
+        .then((response) => {
+          console.log(response)
+          li.id= response.data._id
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+      } else{
+        axios.put(`https://crudcrud.com/api/4f696d0eb91d4c62aec258e81f6917de/bookAcallData/${user_id}`, store) //Updating userdata from crud crud
+        .then((response) => {
+          console.log(response)
+          user_id=0;
+        })
+        .catch((err) => {
+          console.log(err);
+        })
 
-    axios.post("https://crudcrud.com/api/4f696d0eb91d4c62aec258e81f6917de/bookAcallData", store)
-      .then((response) => {
-        console.log(response)
-        li.id= response.data._id
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-    
+      }
+      // localStorage.setItem(store.phone, JSON.stringify(store));
+      // console.log(localStorage.getItem(phoneInput.value))
+      console.log(store);
+      // add Edit button
+      let editBtn = document.createElement("button");
+      editBtn.className = "edit btn-light btn-sm float-right edit";
+      editBtn.appendChild(document.createTextNode("Edit"));
+      li.appendChild(editBtn);
+      let space = document.createTextNode(" ");
+      // append the space before the edit button
+      li.appendChild(space);
+      ///add Edit button
+      let deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn btn-danger btn-sm float-right delete";
+      // Append text node
+      deleteBtn.appendChild(document.createTextNode("Delete"));
+      //append button to li
+      li.appendChild(deleteBtn);
+      //-----------------
+     
 
-    // localStorage.setItem(store.phone, JSON.stringify(store));
-    // console.log(localStorage.getItem(phoneInput.value))
-    console.log(store);
-    // add Edit button
-    let editBtn = document.createElement("button");
-    editBtn.className = "edit btn-light btn-sm float-right edit";
-    editBtn.appendChild(document.createTextNode("Edit"));
-    li.appendChild(editBtn);
-    let space = document.createTextNode(" ");
-    // append the space before the edit button
-    li.appendChild(space);
-    ///add Edit button
-    let deleteBtn = document.createElement("button");
-    deleteBtn.className = "btn btn-danger btn-sm float-right delete";
-    // Append text node
-    deleteBtn.appendChild(document.createTextNode("Delete"));
-    //append button to li
-    li.appendChild(deleteBtn);
-    //-----------------
-    // removeItem(event, li, key)
-
-    // Reset the form fields after successful submission
-    nameInput.value = "";
-    emailInput.value = "";
-    phoneInput.value = "";
+      // Reset the form fields after successful submission
+      nameInput.value = "";
+      emailInput.value = "";
+      phoneInput.value = "";
+     
   }
   x.reset();
 }
@@ -153,11 +163,9 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   })
   .catch((err) => console.log(err))
-})
-  
+})  
 
 // ************delete button functionality************
-// userList.addEventListener('click', removeItem);
 userList.addEventListener("click", function (event) {
   removeItem(event);
 });
@@ -184,30 +192,33 @@ function removeItem(event) {
   }
 }
 
-
 // // *********Edit button functionality************
-// userList.addEventListener("click", function (event) {
-//   editItem(event, phoneInput.value);
-// });
-// function editItem(event) {
-    
-//     event.preventDefault();
-//     if (event.target.classList.contains("edit")) {
-//         if (confirm("Are you sure?")) {
-//             let phone = event.target.parentElement.id;
-//             let li2 = event.target.parentElement;
-
-//             let storeData = JSON.parse(localStorage.getItem(phone));
-//             console.log(storeData);
-//             nameInput.value = storeData.name;
-//             emailInput.value = storeData.email;
-//             phoneInput.value = storeData.phone;
-
-//             localStorage.removeItem(phone);
-//             userList.removeChild(li2);
-//             }
-//         }
-// }
+userList.addEventListener("click", function (event) {
+  editItem(event, phoneInput.value);
+});
+function editItem(event) {
+  event.preventDefault();
+  if (event.target.classList.contains("edit")) {
+    if (confirm("Are you sure?")) {
+      // let phone = event.target.parentElement.id;
+      // let li2 = event.target.parentElement;
+      let li2 = event.target.parentElement;
+      let userId = li2.id;
+      axios.get(`https://crudcrud.com/api/4f696d0eb91d4c62aec258e81f6917de/bookAcallData/${userId}`)
+        .then((response) => {
+          console.log(response)
+          nameInput.value = response.data.name;
+          emailInput.value = response.data.email;
+          phoneInput.value = response.data.phone;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        user_id = userId
+      userList.removeChild(li2);
+    }
+  }
+}
 
 
 
